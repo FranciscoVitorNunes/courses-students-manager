@@ -1,15 +1,22 @@
 class turma:
+    """Representa uma turma acadêmica com funcionalidades para gerenciamento de alunos e notas."""
     def __init__(self):
-        pass
+        """Inicializa um objeto turma."""
+        
     def abrir_turma():
-        pass
+        """Abre uma nova turma."""
+        
     def fechar_turma():
-        pass
+        """Fecha a turma atual."""
+        
     def matricular():
-        pass
+        """Matrícula um aluno na turma."""
+        
     def lancar_nota():
-        pass
+        """Lança uma nota para um aluno na turma."""
+        
     def lancar_frequencia():
-        pass
+        """Lança a frequência de um aluno na turma."""
+        
     def __len__():
-        pass
+        """Retorna o número de alunos na turma."""
