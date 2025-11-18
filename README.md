@@ -28,6 +28,10 @@ Essa estrutura permite uma arquitetura modular, escalável e aderente aos princ�
 
 ---
 
+## Diagrama de Classes
+
+![Diagrama de Classes](diagrama.png)
+
 ## Tecnologias Utilizadas
 
 O projeto será desenvolvido utilizando:
