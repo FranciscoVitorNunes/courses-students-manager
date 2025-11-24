@@ -1,3 +1,6 @@
+from models.oferta import Oferta
+
+
 class Turma(Oferta):
     """
     Representa uma turma ofertada para um curso em um determinado período letivo.
