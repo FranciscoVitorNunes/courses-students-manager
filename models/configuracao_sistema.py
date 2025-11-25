@@ -68,8 +68,6 @@ class ConfiguracaoSistema:
         Altera um ou mais parâmetros do sistema. Apenas parâmetros reconhecidos
         serão modificados, e todos passam pelas mesmas validações do construtor.
 
-        Exemplo:
-            config.alterar_parametros(nota_minima=7, top_n_alunos=5)
         """
         for chave, valor in kwargs.items():
             if chave == "nota_minima":

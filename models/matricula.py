@@ -63,7 +63,7 @@ class Matricula:
         """Indica se a matrícula ainda está ativa (não concluída e não trancada)."""
         return self._ativa
 
-    def lancar_avaliacao(self, nota: float, frequencia: float):
+    def lancar_avaliacao(self, nota: float, frequencia: int):
         """
         Registra nota e frequência do aluno e atualiza automaticamente sua situação.
 

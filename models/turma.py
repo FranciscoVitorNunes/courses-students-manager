@@ -56,8 +56,7 @@ class Turma(Oferta):
 
     def adicionar_matricula(self, matricula):
         """
-        Adiciona uma matrícula à turma.
-        Este método não aplica regras de negócio, apenas registra a matrícula.
+        Adiciona uma matrícula à turma
 
         Args:
             matricula (Matricula): Matrícula a ser associada à turma.
