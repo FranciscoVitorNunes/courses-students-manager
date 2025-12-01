@@ -13,6 +13,7 @@ class SQLiteConnection:
         if cls._connection is None:
             cls._connection = sqlite3.connect(cls._database_file)
             cls._connection.row_factory = sqlite3.Row
+            cls._connection.execute("PRAGMA foreign_keys = ON;")
             cls._cursor = cls._connection.cursor()
 
         return cls._connection, cls._cursor

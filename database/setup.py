@@ -74,8 +74,12 @@ def create_tables():
 
         connection.commit()
         print("\nTabelas criadas com sucesso!")
+        return True
+    
     except Exception as e:
         print(f"\n@@@ Erro ao criar as tabelas: {e} @@@")
+        return False
+    
     finally:
         SQLiteConnection.close_connection()
 

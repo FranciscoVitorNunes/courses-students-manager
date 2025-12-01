@@ -1,17 +1,16 @@
-from database import connection 
+from database.connection import  SQLiteConnection
 from models import Aluno
 
 class AlunoRepository:
     def __init__(self):
-        self.conn , self.cursor = connection.SQLiteConnection.get_connection()
+        self.conn , self.cursor = SQLiteConnection.get_connection()
     
-    def salvar_aluno(self, aluno: Aluno):
+    def salvar(self, aluno: Aluno):
         sql= """
-            INSERT INTO aluno(matricula, nome, email)
-            VALUES (?, ?, ?)
+            INSERT INTO aluno(matricula, nome, email, cr) VALUES (?, ?, ?, ?)
         """
 
-        self.cursor.execute(sql, (aluno.matricula, aluno.nome, aluno.email))
+        self.cursor.execute(sql, (aluno.matricula, aluno.nome, aluno.email, aluno.cr))
         self.conn.commit()
         print("Aluno criado com sucesso!")
 
@@ -28,7 +27,7 @@ class AlunoRepository:
 
         return Aluno(matricula=row['matricula'], nome=row['nome'], email=row['email'])
     
-    def listar_alunos(self) -> list[Aluno] :
+    def listar(self) -> list[Aluno] :
 
         sql = """
             SELECT * FROM aluno;
@@ -37,19 +36,10 @@ class AlunoRepository:
         self.cursor.execute(sql)
         all_row = self.cursor.fetchall()
 
-        if all_row is None:
-            return []
-
-        alunos = []
-
-        for row in all_row:
-            aluno = Aluno(matricula=row['matricula'], nome=row['nome'], email=row['email'])
-
-            alunos.append(aluno)
-
+        alunos = [Aluno(matricula=row['matricula'], nome=row['nome'], email=row['email']) for row in all_row]
         return alunos
     
-    def deletar_por_matricula(self, matricula: str):
+    def deletar(self, matricula: str):
         sql = """
             DELETE FROM aluno WHERE matricula = ?;
         """
@@ -60,7 +50,7 @@ class AlunoRepository:
     
         return 
     
-    def atualizar_aluno(self, aluno: Aluno):
+    def atualizar(self, aluno: Aluno):
         sql = """
             UPDATE aluno
             SET nome = ?, email = ?
