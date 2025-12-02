@@ -17,7 +17,8 @@ def create_tables():
     CREATE TABLE IF NOT EXISTS curso (
         codigo TEXT PRIMARY KEY,
         nome TEXT NOT NULL,
-        carga_horaria INTEGER
+        carga_horaria INTEGER,
+        ementa TEXT
     );
     """
 
@@ -32,7 +33,7 @@ def create_tables():
 
     turma_table = """
     CREATE TABLE IF NOT EXISTS turma (
-        id TEXT PRIMARY KEY,
+        id TEXT PRIMARY KEY ,
         periodo TEXT,
         vagas INTEGER,
         curso_codigo TEXT,

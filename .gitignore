@@ -2,3 +2,8 @@
 /models/__pycache__
 /tests/__pycache__
 __pycache__
+db/__pycache__
+*.pyc
+*.pyo
+*.pyd
+banco_dados.db
