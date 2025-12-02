@@ -39,16 +39,28 @@ class Curso:
     def nome(self):
         """Retorna o nome do curso."""
         return self._nome
+    
+    @nome.setter
+    def nome(self, n_nome):
+        self._nome = n_nome
 
     @property
     def carga_horaria(self):
         """Retorna a carga horária do curso."""
         return self._carga_horaria
+    
+    @carga_horaria.setter
+    def carga_horaria(self, n_carga_horaria):
+        self._carga_horaria = n_carga_horaria
 
     @property
     def ementa(self):
         """Retorna a ementa do curso."""
         return self._ementa
+
+    @ementa.setter
+    def ementa(self, n_ementa):
+        self._ementa = n_ementa
 
     @property
     def prerequisitos(self):
