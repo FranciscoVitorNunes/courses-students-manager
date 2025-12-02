@@ -76,8 +76,8 @@ pip install -r requirements.txt
 ### Executar Testes
 
 ```bash
-# Rodar todos os testes
-pytest
+# Criar o Banco de Dados de Teste
+python database/setup.py
 
 # Rodar com verbosidade
 pytest -v

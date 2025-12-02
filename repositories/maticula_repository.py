@@ -23,10 +23,7 @@ class MatriculaRepository:
         self.cursor.execute(sql, (aluno_matricula, turma_id))
         row = self.cursor.fetchone()
 
-        if row is None:
-            return None
-
-        return True
+        return row is not None
     
     def contar_matriculas_por_turma(self, turma_id: int) -> int:
 
