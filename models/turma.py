@@ -80,6 +80,9 @@ class Turma(Oferta):
             int: Número de vagas restantes.
         """
         return self.vagas - self.vagas_ocupadas()
+    
+    def verificar_choque(self, horarios_externos):
+        return super().verificar_choque(horarios_externos)
 
     def __len__(self):
         """Retorna a quantidade de matrículas ativas, permitindo len(turma)."""
