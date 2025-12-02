@@ -14,15 +14,17 @@ class MatriculaService:
 
     def matricular(self, aluno_matricula: str, turma_id: str):
         aluno = self.aluno_repo.buscar_por_matricula(aluno_matricula)
-        turma_data = self.turma_repo.buscar_por_id(turma_id)
-        curso = self.curso_repo.buscar_curso_por_codigo(turma_data['curso_codigo'])
+        dados = self.turma_repo.buscar_por_id(turma_id)
+        curso = self.curso_repo.buscar_curso_por_codigo(dados['curso_codigo'])
 
-        turma_id = turma_data['id']
-        turma_periodo = turma_data['periodo']
-        turma_vagas = turma_data['vagas']
-        turma_horarios = turma_data['horarios']
+        turma = Turma(
+            id=dados["id"],
+            periodo=dados["periodo"],
+            horarios=dados["horarios"],
+            vagas=dados["vagas"],
+            curso=curso
+        )
 
-        turma = Turma(turma_id, turma_periodo,turma_horarios, turma_vagas, curso)
 
         self._check_entidades_existem(aluno,turma)
         self._check_aluno_ja_matriculado(aluno, turma)
