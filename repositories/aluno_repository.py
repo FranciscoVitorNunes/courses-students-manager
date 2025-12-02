@@ -1,5 +1,5 @@
 from database.connection import  SQLiteConnection
-from models import Aluno
+from models.aluno import Aluno
 
 class AlunoRepository:
     def __init__(self):
