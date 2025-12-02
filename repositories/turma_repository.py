@@ -57,17 +57,39 @@ class TurmaRepository:
         "horarios": horarios_dict
         }
     
-    def listar(self) -> list[Turma] :
+    def listar(self) -> list[dict]:
+            sql_turmas = """SELECT id, periodo, vagas, curso_codigo FROM turma;"""
+            self.cursor.execute(sql_turmas)
+            turmas_rows = self.cursor.fetchall()
 
-        sql = """
-            SELECT * FROM turma;
-        """
+            if not turmas_rows:
+                return []
 
-        self.cursor.execute(sql)
-        all_row = self.cursor.fetchall()
-
-        turmas = [Turma(id=row['id'], periodo=row['periodo'], vagas=row['vagas'], curso_codigo=row['curso_codigo']) for row in all_row]
-        return turmas
+            sql_horarios = """SELECT turma_id, dia, intervalo FROM horario_turma;"""
+            self.cursor.execute(sql_horarios)
+            all_horarios_rows = self.cursor.fetchall()
+            
+            horarios_por_turma = {}
+            for h_row in all_horarios_rows:
+                turma_id = h_row['turma_id']
+                if turma_id not in horarios_por_turma:
+                    horarios_por_turma[turma_id] = {}
+                horarios_por_turma[turma_id][h_row['dia']] = h_row['intervalo']
+                
+            turmas_completas_em_dados = []
+            for row in turmas_rows:
+                turma_id = row['id']
+                
+                turma_dict = {
+                    "id": turma_id,
+                    "periodo": row["periodo"],
+                    "vagas": row["vagas"],
+                    "curso_codigo": row["curso_codigo"],
+                    "horarios": horarios_por_turma.get(turma_id, {})
+                }
+                turmas_completas_em_dados.append(turma_dict)
+                
+            return turmas_completas_em_dados
 
     def deletar(self, id: str):
         sql = """

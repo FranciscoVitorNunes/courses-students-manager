@@ -43,17 +43,18 @@ class CursoRepository:
     def atualizar_curso(self, curso: Curso):
         sql = """
             UPDATE curso
-            SET codigo = ?, nome = ?, carga_horaria = ?, ementa=?
-            WHERE matricula = ?;
+            SET nome = ?, carga_horaria = ?, ementa = ?
+            WHERE codigo = ?;
         """
 
-        self.cursor.execute(sql, (curso.nome, curso.email, curso.matricula, curso.ementa))
+        self.cursor.execute(sql, (curso.nome, curso.carga_horaria, curso.ementa, curso.codigo))
         self.conn.commit()
-        print("Atualizado com sucesso!")
+        print("Curso atualizado com sucesso!")
+
 
     def adiconar_prerequisitos(self, codigo_curso,prerequisito_curso):
         sql= """
-            INSERT INTO curso_prerequisitos(curso_codigo, prerequisito_codigo) VALUES (?, ?, ?)
+            INSERT INTO curso_prerequisitos(curso_codigo, prerequisito_codigo) VALUES (?, ?)
         """
 
         self.cursor.execute(sql, (codigo_curso,prerequisito_curso))
