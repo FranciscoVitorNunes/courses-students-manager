@@ -1,4 +1,3 @@
-import pytest
 from repositories.aluno_repository import AlunoRepository
 from repositories.curso_repository import CursoRepository
 from repositories.maticula_repository import MatriculaRepository
@@ -25,14 +24,11 @@ def test_matricular_integracao():
     aluno = Aluno(matricula='2025001', nome='Vitor', email='vitor@gmail.com')
     repo_aluno.salvar(aluno)
 
-    # Injetar na ordem CORRETA
     service = MatriculaService(repo_aluno, repo_curso, repo_turma, repo_mat)
 
-    # Executar a operação principal
     matricula = service.matricular("2025001", "TU1")
 
-    # Assert: verificar se a matrícula foi salva e tem os dados corretos
-    # Idealmente, você buscaria a matrícula pelo repo_mat e verificaria
     assert matricula is not None
+    assert repo_mat.buscar_por_aluno_e_turma("2025001", "TU1") == True
     assert matricula.aluno.matricula == '2025001'
     
