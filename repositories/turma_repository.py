@@ -48,15 +48,14 @@ class TurmaRepository:
         horarios_dict = {}
         for h in all_horarios:
             horarios_dict[h['dia']] = h['intervalo']
-        
-        turma_id=row['id'] 
-        periodo=row['periodo'] 
-        vagas=row['vagas'] 
-        curso=row['curso_codigo']
 
-        turma = Turma(id=turma_id, periodo=periodo,horarios=horarios_dict, vagas=vagas, curso=curso)
-
-        return turma
+        return {
+        "id": row["id"],
+        "periodo": row["periodo"],
+        "vagas": row["vagas"],
+        "curso_codigo": row["curso_codigo"],
+        "horarios": horarios_dict
+        }
     
     def listar(self) -> list[Turma] :
 
