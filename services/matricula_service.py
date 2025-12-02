@@ -1,4 +1,5 @@
 from models.matricula import Matricula
+from models.turma import Turma
 
 class MatriculaService:
     def __init__(self, aluno_repo, curso_repo, turma_repo, matricula_repo):
@@ -13,7 +14,15 @@ class MatriculaService:
 
     def matricular(self, aluno_matricula: str, turma_id: str):
         aluno = self.aluno_repo.buscar_por_matricula(aluno_matricula)
-        turma = self.turma_repo.buscar_por_id(turma_id)
+        turma_data = self.turma_repo.buscar_por_id(turma_id)
+        curso = self.curso_repo.buscar_curso_por_codigo(turma_data['curso_codigo'])
+
+        turma_id = turma_data['id']
+        turma_periodo = turma_data['periodo']
+        turma_vagas = turma_data['vagas']
+        turma_horarios = turma_data['horarios']
+
+        turma = Turma(turma_id, turma_periodo,turma_horarios, turma_vagas, curso)
 
         self._check_entidades_existem(aluno,turma)
         self._check_aluno_ja_matriculado(aluno, turma)
@@ -42,7 +51,7 @@ class MatriculaService:
             raise self.ValidacaoError(f"Turma {turma.id} não possui vagas disponíveis.")
 
     def _check_atende_prerequisitos(self, aluno, turma):
-        curso = self.curso_repo.buscar_curso_por_codigo(turma.curso)
+        curso = self.curso_repo.buscar_curso_por_codigo(turma.curso.codigo)
         prerequisitos = self.curso_repo.buscar_prerequisitos(curso.codigo) 
 
         historico = aluno.get_historico()  # lista de dicts com 'disciplina' e 'situacao'
