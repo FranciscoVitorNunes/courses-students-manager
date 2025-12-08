@@ -2,35 +2,40 @@ import pytest
 from repositories.curso_repository import CursoRepository
 from models.curso import Curso
 
-@pytest.fixture
-def repo():
-    # Cria um repositório novo para cada teste
-    return CursoRepository()
+repo = CursoRepository()
 
-@pytest.fixture
-def curso_exemplo():
-    return Curso("POO001", "Programação Orientada a Objeto", 64, "ementa tests...")
+def test_salvar_curso():
+    curso = Curso("BD001", "Banco de Dados", 80)
+    repo.salvar_curso(curso)
 
-def test_salvar_e_buscar_curso(repo, curso_exemplo):
-    repo.salvar_curso(curso_exemplo)
-    curso = repo.buscar_curso_por_codigo("POO001")
-    assert curso is not None
-    assert curso.codigo == "POO001"
+    encontrado = repo.buscar_curso_por_codigo("BD001")
+    assert encontrado is not None
+    assert encontrado.nome == "Banco de Dados"
 
+def test_atualizar_curso():
+    curso = Curso("BD001", "Banco de Dados Avançado", 100)
+    curso.ementa = "Nova ementa"
 
-#def test_listar_listar(repo):
-#    cursos = repo.listar()
-#    assert isinstance(cursos, list)
-#    assert any(a.codigo == "POO001" for a in cursos)
+    repo.atualizar_curso(curso)
+    atualizado = repo.buscar_curso_por_codigo("BD001")
 
-def test_atualizar_curso(repo, curso_exemplo):
-    curso_exemplo.nome = "POO abreviação"
-    curso_exemplo.carga_horaria = 45
-    repo.atualizar_curso(curso_exemplo)
-    curso = repo.buscar_curso_por_codigo("POO001")
-    assert curso.nome == "POO abreviação"
+    assert atualizado.nome == "Banco de Dados Avançado"
 
-def test_deletar_curso(repo):
-    repo.deletar_curso("POO001")
-    curso = repo.buscar_curso_por_codigo("POO001")
-    assert curso is None
+def test_deletar_curso():
+    repo.deletar_curso("BD001")
+    encontrado = repo.buscar_curso_por_codigo("BD001")
+
+    assert encontrado is None
+
+def test_adicionar_prerequisito():
+    curso_bd = Curso("BD001", "Banco de Dados", 80)
+    curso_algo = Curso("ALGO001", "Algoritmos", 60)
+
+    repo.salvar_curso(curso_bd)
+    repo.salvar_curso(curso_algo)
+
+    repo.adiconar_prerequisitos("BD001", "ALGO001")
+
+    prereqs = repo.buscar_prerequisitos("BD001")
+
+    assert "ALGO001" in prereqs
