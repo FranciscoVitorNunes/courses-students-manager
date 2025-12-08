@@ -43,7 +43,7 @@ O projeto será desenvolvido utilizando:
 |-----------|------------|--------|
 | **Python** | Linguagem de programação principal do sistema | ✅ Ativo |
 | **FastAPI** | Framework para criação da API REST com validação automática e documentação gerada | ⏳ Planejado |
-| **SQLite** | Banco de dados leve utilizado para persistência de informações | ⏳ Planejado |
+| **SQLite** | Banco de dados leve utilizado para persistência de informações | ✅ Ativo |
 | **SQLAlchemy** | ORM para gerenciamento de banco de dados | ⏳ Planejado |
 | **Pydantic** | Validação e serialização de dados | ⏳ Planejado |
 | **pytest** | Framework para testes automatizados | ✅ Ativo |

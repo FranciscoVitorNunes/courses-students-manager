@@ -17,7 +17,7 @@ class AlunoService:
         except:
             return False
         
-    def atualizar_aluno_service(self, matricula, aluno):
+    def atualizar_aluno_service(self, aluno):
         try:
             AlunoRepository.atualizar(aluno)
         except:

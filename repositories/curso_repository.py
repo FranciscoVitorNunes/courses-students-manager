@@ -54,7 +54,7 @@ class CursoRepository:
 
     def adiconar_prerequisitos(self, codigo_curso,prerequisito_curso):
         sql= """
-            INSERT INTO curso_prerequisitos(curso_codigo, prerequisito_codigo) VALUES (?, ?)
+            INSERT INTO curso_prerequisito(curso_codigo, prerequisito_codigo) VALUES (?, ?)
         """
 
         self.cursor.execute(sql, (codigo_curso,prerequisito_curso))
