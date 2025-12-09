@@ -1,5 +1,5 @@
 from database.connection import  SQLiteConnection
-from schemas.aluno_schema import AlunoSchema, UpdateAlunoSchema
+from schemas.aluno_schema import AlunoSchema
 
 class AlunoRepository:
     def __init__(self):

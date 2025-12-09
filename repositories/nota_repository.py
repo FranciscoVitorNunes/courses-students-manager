@@ -13,3 +13,9 @@ class NotaRepository:
         self.cursor.execute(sql, (dados["matricula_id"], dados["avaliacao"], dados["nota"]))
         self.conn.commit()
         return self.cursor.lastrowid
+    
+    def delete(self, id: int):
+        self.cursor.execute("DELETE FROM nota WHERE id = ?", (id,))
+        self.conn.commit()
+        self.cursor.execute("SELECT changes();")
+        return self.cursor.fetchone()[0] > 0

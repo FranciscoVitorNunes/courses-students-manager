@@ -14,3 +14,10 @@ def listar_notas(matricula_id: int):
 def criar_nota(n: CreateNotaSchema):
     id = service.create(n.model_dump())
     return service.get_by_matricula(n.matricula_id)[-1]
+
+@router.delete("/{id}")
+def deletar_nota(id: int):
+    sucesso = service.delete(id)
+    if not sucesso:
+        raise HTTPException(status_code=404, detail="Nota não encontrada")
+    return {"message": "Nota deletada"}
