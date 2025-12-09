@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from fastapi import APIRouter
 from repositories.aluno_repository import AlunoRepository
-from schemas.aluno_schema import AlunoSchema
+from schemas.aluno_schema import AlunoSchema, UpdateAlunoSchema
 
 router = APIRouter(prefix="/alunos", tags=["Alunos"])
 service = AlunoRepository()
@@ -28,3 +28,17 @@ def buscar_por_matricula(matricula: str):
 @router.delete("/{matricula}")
 def deletar(matricula: str):
         service.deletar(matricula)
+
+@router.patch("/{matricula}")
+def atualizar(matricula: str, aluno: UpdateAlunoSchema):
+    dados = aluno.model_dump(exclude_none=True)
+
+    atualizado = service.atualizar(matricula, dados)
+
+    if not atualizado:
+        raise HTTPException(
+            status_code=404,
+            detail="Aluno não encontrado ou nada para atualizar"
+        )
+
+    return {"message": "Aluno atualizado parcialmente"}

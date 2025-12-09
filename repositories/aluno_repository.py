@@ -1,6 +1,5 @@
 from database.connection import  SQLiteConnection
-from models.aluno import Aluno
-from schemas.aluno_schema import AlunoSchema
+from schemas.aluno_schema import AlunoSchema, UpdateAlunoSchema
 
 class AlunoRepository:
     def __init__(self):
@@ -63,13 +62,36 @@ class AlunoRepository:
     
         return 
     
-    def atualizar(self, aluno: Aluno):
-        sql = """
+    def atualizar(self, matricula: str,dados: dict):
+        campos = []
+        valores = []
+
+        if "nome" in dados:
+            campos.append("nome = ?")
+            valores.append(dados["nome"])
+
+        if "email" in dados:
+            campos.append("email = ?")
+            valores.append(dados["email"])
+
+        if "cr" in dados:
+            campos.append("cr = ?")
+            valores.append(dados["cr"])
+
+        if not campos:
+            return False 
+
+        sql = f"""
             UPDATE aluno
-            SET nome = ?, email = ?
+            SET {", ".join(campos)}
             WHERE matricula = ?;
         """
+        valores.append(matricula)
 
-        self.cursor.execute(sql, (aluno.nome, aluno.email, aluno.matricula))
+        self.cursor.execute(sql, tuple(valores))
         self.conn.commit()
-        print("Atualizado com sucesso!")
+
+        self.cursor.execute("SELECT changes();")
+        alterados = self.cursor.fetchone()[0]
+
+        return alterados > 0
