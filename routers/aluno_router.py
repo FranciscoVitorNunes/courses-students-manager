@@ -24,3 +24,7 @@ def buscar_por_matricula(matricula: str):
     if not aluno:
         raise HTTPException(status_code=404, detail="Aluno não encontrado")
     return aluno
+
+@router.delete("/{matricula}")
+def deletar(matricula: str):
+        service.deletar(matricula)
