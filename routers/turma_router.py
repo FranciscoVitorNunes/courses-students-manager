@@ -34,16 +34,16 @@ def criar(turma: TurmaSchema):
 
 @router.get("/{id}")
 def buscar_por_id(id: str):
-    turma = service.get_by_idi(id)
+    turma = service.get_by_id(id)
     if not turma:
         raise HTTPException(status_code=404, detail="Turma não encontrada")
     
     return TurmaSchema(
-        id=turma.id,
-        periodo=turma.periodo,
-        vagas=turma.vagas,
-        curso=turma.curso,
-        horario=turma.horarios
+        id=turma['id'],
+        periodo=turma['periodo'],
+        vagas=turma['vagas'],
+        curso=turma['curso_codigo'],
+        horarios=turma['horarios']
     )
 
 @router.delete("/{id}")
