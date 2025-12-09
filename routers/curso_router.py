@@ -25,9 +25,9 @@ def buscar_por_codigo(codigo: str):
         raise HTTPException(status_code=404, detail="Curso não encontrado")
     return curso
 
-@router.delete("/{matricula}")
-def deletar(matricula: str):
-        service.deletar(matricula)
+@router.delete("/{codigo}")
+def deletar(codigo: str):
+    service.delete(codigo)
 
 @router.patch("/{matricula}")
 def atualizar(matricula: str, aluno: CursoSchema):
