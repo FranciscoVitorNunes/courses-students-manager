@@ -79,7 +79,7 @@ def create_tables():
             FOREIGN KEY(matricula_id) REFERENCES matricula(id) ON DELETE CASCADE
     );
     """
-    
+
     try:
         cursor.execute(aluno_table)
         cursor.execute(curso_table)
@@ -87,6 +87,8 @@ def create_tables():
         cursor.execute(turma_table)
         cursor.execute(horario_turma_table)
         cursor.execute(matricula_table)
+        cursor.execute(nota_table)
+        cursor.execute(frequencia_table)
 
         connection.commit()
         print("\nTabelas criadas com sucesso!")

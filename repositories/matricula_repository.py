@@ -13,14 +13,14 @@ class MatriculaRepository:
             return None
         return dict(row)
     
-    def salvar(self, matricula: Matricula):
-        sql= """
-            INSERT INTO matricula(aluno_matricula, turma_id) VALUES (?, ?)
+    def create(self, dados: dict):
+        sql = """
+            INSERT INTO matricula (aluno_matricula, turma_id, situacao)
+            VALUES (?, ?, ?)
         """
-
-        self.cursor.execute(sql, (matricula.aluno.matricula, matricula.turma.id))
+        self.cursor.execute(sql, (dados["aluno_matricula"], dados["turma_id"], dados.get("situacao", "cursando")))
         self.conn.commit()
-        print("Matrícula realizada com sucesso!")
+        return self.cursor.lastrowid
     
     def buscar_por_aluno_e_turma(self, aluno_matricula: str, turma_id: str) -> bool:
         """Retorna True se matricula existir"""
