@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Dict
+from typing import Optional
 
 class TurmaSchema(BaseModel):
     id: str
@@ -9,4 +10,6 @@ class TurmaSchema(BaseModel):
     horarios: Dict[str, str]
 
 class UpdateTurmaSchema(BaseModel):
-    pass
+    periodo: Optional[str] = None
+    vagas: Optional[int] = None
+    horarios: Optional[Dict[str, str]] = None

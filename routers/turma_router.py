@@ -4,7 +4,6 @@ from repositories.turma_repository import TurmaRepository
 from repositories.curso_repository import CursoRepository
 from schemas.turma_schema import TurmaSchema, UpdateTurmaSchema
 from models.turma import Turma
-from models.curso import Curso
 
 router = APIRouter(prefix="/turmas", tags=["Turmas"])
 service = TurmaRepository()
@@ -50,16 +49,16 @@ def buscar_por_id(id: str):
 def deletar(id: str):
     service.delete(id)
 
-@router.patch("/{codigo}")
-def atualizar(codigo: str, curso: UpdateTurmaSchema):
+@router.patch("/{id}")
+def atualizar(id: str, curso: UpdateTurmaSchema):
     dados = curso.model_dump(exclude_none=True)
 
-    atualizado = service.update(codigo, dados)
+    atualizado = service.update(id, dados)
 
     if not atualizado:
         raise HTTPException(
             status_code=404,
-            detail="Curso não encontrado ou nada para atualizar"
+            detail="Turma não encontrado ou nada para atualizar"
         )
 
-    return {"message": "Curso atualizado parcialmente"}
+    return {"message": "Turma atualizado parcialmente"}

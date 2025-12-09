@@ -104,15 +104,69 @@ class TurmaRepository:
     
         return True
     
-    def update(self, turma: Turma):
-        sql = """
-            UPDATE turma
-            SET  = ?,  = ?
-            WHERE id = ?;
-        """
+    def update(self, id: str, dados: dict):
+        campos = []
+        valores = []
 
-        self.cursor.execute(sql, ())
+        if "periodo" in dados:
+            campos.append("periodo = ?")
+            valores.append(dados["periodo"])
+
+        if "vagas" in dados:
+            campos.append("vagas = ?")
+            valores.append(dados["vagas"])
+
+        if campos:
+            sql = f"""
+                UPDATE turma
+                SET {", ".join(campos)}
+                WHERE id = ?;
+            """
+            valores.append(id)
+            self.cursor.execute(sql, tuple(valores))
+
+        if "horarios" in dados:
+            novos_horarios = dados["horarios"]
+
+            sql = "SELECT dia, intervalo FROM horario_turma WHERE turma_id = ?"
+            self.cursor.execute(sql, (id,))
+            existentes_rows = self.cursor.fetchall()
+
+            existentes = {h["dia"]: h["intervalo"] for h in existentes_rows}
+
+            # Atualizar ou adicionar novos dias
+            for dia, intervalo in novos_horarios.items():
+                if dia in existentes:
+                    if existentes[dia] != intervalo:
+                        sql = """
+                            UPDATE horario_turma
+                            SET intervalo = ?
+                            WHERE turma_id = ? AND dia = ?
+                        """
+                        self.cursor.execute(sql, (intervalo, id, dia))
+                else:
+                    sql = """
+                        INSERT INTO horario_turma (dia, intervalo, turma_id)
+                        VALUES (?, ?, ?)
+                    """
+                    self.cursor.execute(sql, (dia, intervalo, id))
+
+            # Remover dias que sumiram
+            dias_novos = set(novos_horarios.keys())
+            dias_existentes = set(existentes.keys())
+
+            dias_para_apagar = dias_existentes - dias_novos
+
+            for dia in dias_para_apagar:
+                sql = """
+                    DELETE FROM horario_turma
+                    WHERE turma_id = ? AND dia = ?
+                """
+                self.cursor.execute(sql, (id, dia))
+
         self.conn.commit()
-        print("Atualizado com sucesso!")
 
-        return True
+        self.cursor.execute("SELECT changes();")
+        alterados = self.cursor.fetchone()[0]
+
+        return alterados > 0
