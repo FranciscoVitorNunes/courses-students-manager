@@ -22,6 +22,13 @@ class MatriculaRepository:
         self.conn.commit()
         return self.cursor.lastrowid
     
+    def delete(self, id: int):
+        self.cursor.execute("DELETE FROM matricula WHERE id = ?", (id,))
+        self.conn.commit()
+        self.cursor.execute("SELECT changes();")
+        alterados = self.cursor.fetchone()[0]
+        return alterados > 0
+    
     def buscar_por_aluno_e_turma(self, aluno_matricula: str, turma_id: str) -> bool:
         """Retorna True se matricula existir"""
         sql= """

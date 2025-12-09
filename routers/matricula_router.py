@@ -18,3 +18,7 @@ def criar(m: CreateMatriculaSchema):
     dados = m.model_dump()
     id = service.create(dados)
     return service.get_by_id(id)
+
+@router.delete("/{id}")
+def deletar(id: int):
+    return service.delete(id)
