@@ -91,6 +91,9 @@ class TurmaRepository:
             return turmas_completas_em_dados
 
     def delete(self, id: str):
+        sql_horarios = "DELETE FROM horario_turma WHERE turma_id = ?"
+        self.cursor.execute(sql_horarios, (id,))
+
         sql = """
             DELETE FROM turma WHERE id = ?;
         """
