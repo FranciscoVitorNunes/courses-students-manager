@@ -10,6 +10,13 @@ service = AlunoRepository()
 def listar():
     return service.listar()
 
+@router.post("/")
+def criar(aluno: AlunoSchema):
+    try:
+        service.salvar(aluno)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Erro ao criar aluno")
+
 
 @router.get("/{matricula}")
 def buscar_por_matricula(matricula: str):

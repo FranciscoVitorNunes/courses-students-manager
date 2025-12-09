@@ -1,11 +1,12 @@
 from database.connection import  SQLiteConnection
 from models.aluno import Aluno
 from schemas.aluno_schema import AlunoSchema
+
 class AlunoRepository:
     def __init__(self):
         self.conn , self.cursor = SQLiteConnection.get_connection()
     
-    def salvar(self, aluno: Aluno):
+    def salvar(self, aluno: AlunoSchema):
         sql= """
             INSERT INTO aluno(matricula, nome, email, cr) VALUES (?, ?, ?, ?)
         """

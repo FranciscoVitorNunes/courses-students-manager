@@ -1,5 +1,5 @@
 import sqlite3
-
+import os
 
 class SQLiteConnection:
     """Gerencia a conexão SQLite e fornece (connection, cursor)."""
@@ -11,6 +11,7 @@ class SQLiteConnection:
     def get_connection(cls):
         """Retorna uma tupla (connection, cursor). Cria a conexão na primeira chamada."""
         if cls._connection is None:
+            print("🚨 BANCO REAL:", os.path.abspath(cls._database_file))
             cls._connection = sqlite3.connect(cls._database_file, check_same_thread=False)
             cls._connection.row_factory = sqlite3.Row
             cls._connection.execute("PRAGMA foreign_keys = ON;")
