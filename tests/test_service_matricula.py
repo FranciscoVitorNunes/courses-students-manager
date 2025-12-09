@@ -1,6 +1,6 @@
 from repositories.aluno_repository import AlunoRepository
 from repositories.curso_repository import CursoRepository
-from repositories.maticula_repository import MatriculaRepository
+from repositories.matricula_repository import MatriculaRepository
 from repositories.turma_repository import TurmaRepository
 from services.matricula_service import MatriculaService
 

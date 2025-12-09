@@ -52,19 +52,34 @@ def create_tables():
     """
 
     matricula_table = """
-    CREATE TABLE IF NOT EXISTS matricula (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        aluno_matricula TEXT,
-        turma_id TEXT,
-        nota REAL,
-        frequencia REAL,
-        situacao TEXT,
-        ativa INTEGER,
-        FOREIGN KEY (aluno_matricula) REFERENCES aluno(matricula),
-        FOREIGN KEY (turma_id) REFERENCES turma(id)
+        CREATE TABLE IF NOT EXISTS matricula (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            aluno_matricula TEXT NOT NULL,
+            turma_id TEXT NOT NULL,
+            situacao TEXT NOT NULL DEFAULT 'cursando',
+            FOREIGN KEY(aluno_matricula) REFERENCES aluno(matricula) ON DELETE CASCADE,
+            FOREIGN KEY(turma_id) REFERENCES turma(id) ON DELETE CASCADE
     );
     """
-
+    nota_table = """
+        CREATE TABLE IF NOT EXISTS nota (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            matricula_id INTEGER NOT NULL,
+            avaliacao TEXT NOT NULL,
+            nota REAL NOT NULL,
+            FOREIGN KEY(matricula_id) REFERENCES matricula(id) ON DELETE CASCADE
+     );
+    """
+    frequencia_table = """
+        CREATE TABLE IF NOT EXISTS frequencia (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            matricula_id INTEGER NOT NULL,
+            data TEXT NOT NULL,
+            presenca INTEGER NOT NULL,
+            FOREIGN KEY(matricula_id) REFERENCES matricula(id) ON DELETE CASCADE
+    );
+    """
+    
     try:
         cursor.execute(aluno_table)
         cursor.execute(curso_table)

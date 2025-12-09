@@ -5,6 +5,14 @@ class MatriculaRepository:
     def __init__(self):
         self.conn , self.cursor = SQLiteConnection.get_connection()
     
+
+    def get_by_id(self, id: int):
+        self.cursor.execute("SELECT * FROM matricula WHERE id = ?", (id,))
+        row = self.cursor.fetchone()
+        if not row:
+            return None
+        return dict(row)
+    
     def salvar(self, matricula: Matricula):
         sql= """
             INSERT INTO matricula(aluno_matricula, turma_id) VALUES (?, ?)
