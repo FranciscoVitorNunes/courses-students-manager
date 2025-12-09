@@ -1,5 +1,4 @@
 from database.connection import  SQLiteConnection
-from models.matricula import Matricula
 
 class MatriculaRepository:
     def __init__(self):

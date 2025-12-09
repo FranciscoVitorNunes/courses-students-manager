@@ -1,6 +1,6 @@
 from database.connection import  SQLiteConnection
 from models.curso import Curso
-from schemas.curso_schema import CursoSchema, UpdateCursoSchema
+from schemas.curso_schema import CursoSchema
 
 class CursoRepository:
     def __init__(self):
