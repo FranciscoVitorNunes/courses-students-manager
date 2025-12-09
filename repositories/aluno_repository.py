@@ -1,6 +1,6 @@
 from database.connection import  SQLiteConnection
 from models.aluno import Aluno
-
+from schemas.aluno_schema import AlunoSchema
 class AlunoRepository:
     def __init__(self):
         self.conn , self.cursor = SQLiteConnection.get_connection()
@@ -14,21 +14,25 @@ class AlunoRepository:
         self.conn.commit()
         print("Aluno criado com sucesso!")
 
-    def buscar_por_matricula(self, matricula: str) -> Aluno | None:
+    def buscar_por_matricula(self, matricula: str) -> AlunoSchema | None:
         sql = """
             SELECT * FROM aluno WHERE matricula = ?;
         """
 
         self.cursor.execute(sql, (matricula, ))
         row = self.cursor.fetchone()
-
+        print("debugg row ==>", row)
         if row is None:
             return None
 
-        return Aluno(matricula=row['matricula'], nome=row['nome'], email=row['email'])
+        return  AlunoSchema(
+                matricula=row['matricula'], 
+                nome=row['nome'], 
+                email=row['email'], 
+                cr=row['cr']
+            ) 
     
-    def listar(self) -> list[Aluno] :
-
+    def listar(self) -> list[AlunoSchema] :
         sql = """
             SELECT * FROM aluno;
         """
@@ -36,7 +40,15 @@ class AlunoRepository:
         self.cursor.execute(sql)
         all_row = self.cursor.fetchall()
 
-        alunos = [Aluno(matricula=row['matricula'], nome=row['nome'], email=row['email']) for row in all_row]
+        alunos = [
+            AlunoSchema(
+                matricula=row['matricula'], 
+                nome=row['nome'], 
+                email=row['email'], 
+                cr=row['cr']
+            ) 
+                for row in all_row
+        ]
         return alunos
     
     def deletar(self, matricula: str):
