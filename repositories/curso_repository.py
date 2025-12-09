@@ -34,7 +34,7 @@ class CursoRepository:
         self.conn.commit()
         print("Curso criado com sucesso!")
 
-    def get_by_codigo(self, codigo_curso) -> CursoSchema | None:
+    def get_by_codigo(self, codigo_curso) -> Curso | None:
         sql = """
             SELECT * FROM curso WHERE codigo = ?;
         """

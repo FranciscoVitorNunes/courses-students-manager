@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from routers import aluno_router
 from routers import curso_router
+from routers import turma_router
 
 app = FastAPI(title="Gerenciador de Cursos e Alunos")
 
@@ -10,4 +11,4 @@ def teste():
 
 app.include_router(aluno_router.router)
 app.include_router(curso_router.router)
-
+app.include_router(turma_router.router)

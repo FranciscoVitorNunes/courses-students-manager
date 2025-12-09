@@ -5,8 +5,7 @@ class TurmaRepository:
     def __init__(self):
         self.conn , self.cursor = SQLiteConnection.get_connection()
     
-    def salvar(self, turma: Turma):
-        # 1. SALVAR O REGISTRO PRINCIPAL NA TABELA 'turma'
+    def create(self, turma: Turma):
         sql_turma = """
             INSERT INTO turma(id, periodo, vagas, curso_codigo) VALUES (?, ?, ?, ?)
         """
@@ -28,7 +27,7 @@ class TurmaRepository:
         
         print("Turma e horários criados com sucesso!")
 
-    def buscar_por_id(self, id: str) -> Turma | None:
+    def get_by_id(self, id: str) -> Turma | None:
         sql = """
             SELECT * FROM turma WHERE id = ?;
         """
@@ -57,7 +56,7 @@ class TurmaRepository:
         "horarios": horarios_dict
         }
     
-    def listar(self) -> list[dict]:
+    def list_all(self) -> list[dict]:
             sql_turmas = """SELECT id, periodo, vagas, curso_codigo FROM turma;"""
             self.cursor.execute(sql_turmas)
             turmas_rows = self.cursor.fetchall()
@@ -91,7 +90,7 @@ class TurmaRepository:
                 
             return turmas_completas_em_dados
 
-    def deletar(self, id: str):
+    def delete(self, id: str):
         sql = """
             DELETE FROM turma WHERE id = ?;
         """
@@ -102,7 +101,7 @@ class TurmaRepository:
     
         return True
     
-    def atualizar(self, turma: Turma):
+    def update(self, turma: Turma):
         sql = """
             UPDATE turma
             SET  = ?,  = ?
