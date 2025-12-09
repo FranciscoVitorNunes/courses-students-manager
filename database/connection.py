@@ -11,7 +11,7 @@ class SQLiteConnection:
     def get_connection(cls):
         """Retorna uma tupla (connection, cursor). Cria a conexão na primeira chamada."""
         if cls._connection is None:
-            cls._connection = sqlite3.connect(cls._database_file)
+            cls._connection = sqlite3.connect(cls._database_file, check_same_thread=False)
             cls._connection.row_factory = sqlite3.Row
             cls._connection.execute("PRAGMA foreign_keys = ON;")
             cls._cursor = cls._connection.cursor()
