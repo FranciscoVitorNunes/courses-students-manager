@@ -6,6 +6,10 @@ from schemas.matricula_schema import MatriculaSchema, CreateMatriculaSchema
 router = APIRouter(prefix="/matriculas", tags=["Matriculas"])
 service = MatriculaRepository()
 
+@router.get("/", response_model=list[MatriculaSchema])
+def listar_todas():
+    return service.get_all()
+
 @router.get("/{id}", response_model=MatriculaSchema)
 def buscar(id: int):
     matricula = service.get_by_id(id)

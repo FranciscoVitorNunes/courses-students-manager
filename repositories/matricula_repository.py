@@ -5,7 +5,11 @@ class MatriculaRepository:
     def __init__(self):
         self.conn , self.cursor = SQLiteConnection.get_connection()
     
-
+    def get_all(self):
+        self.cursor.execute("SELECT * FROM matricula")
+        rows = self.cursor.fetchall()
+        return [dict(r) for r in rows]
+    
     def get_by_id(self, id: int):
         self.cursor.execute("SELECT * FROM matricula WHERE id = ?", (id,))
         row = self.cursor.fetchone()
