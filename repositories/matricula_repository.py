@@ -33,6 +33,18 @@ class MatriculaRepository:
         alterados = self.cursor.fetchone()[0]
         return alterados > 0
     
+    def update(self, id: int, dados: dict):
+        if "situacao" not in dados:
+            return False  
+
+        sql = "UPDATE matricula SET situacao = ? WHERE id = ?"
+        self.cursor.execute(sql, (dados["situacao"], id))
+        self.conn.commit()
+
+        self.cursor.execute("SELECT changes();")
+        alterados = self.cursor.fetchone()[0]
+        return alterados > 0
+
     def buscar_por_aluno_e_turma(self, aluno_matricula: str, turma_id: str) -> bool:
         """Retorna True se matricula existir"""
         sql= """
@@ -44,7 +56,7 @@ class MatriculaRepository:
 
         return row is not None
     
-    def contar_matriculas_por_turma(self, turma_id: int) -> int:
+    def count_matriculas_for_turma(self, turma_id: int) -> int:
 
         sql = """
             SELECT COUNT(*) FROM matricula WHERE turma_id = ?
@@ -56,7 +68,7 @@ class MatriculaRepository:
         
         return contagem
 
-    def listar_turmas_por_aluno(self, aluno_matricula: str) -> list[str]:
+    def list_turmas_for_aluno(self, aluno_matricula: str) -> list[str]:
         sql = """
             SELECT turma_id FROM matricula WHERE aluno_matricula = ?;
         """

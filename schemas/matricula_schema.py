@@ -13,6 +13,4 @@ class CreateMatriculaSchema(BaseModel):
     situacao: Optional[str] = "cursando"
 
 class UpdateMatriculaSchema(BaseModel):
-    aluno_matricula: Optional[str] = None
-    turma_id: Optional[str] = None
     situacao: Optional[str] = None
