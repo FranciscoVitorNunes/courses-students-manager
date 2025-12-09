@@ -9,3 +9,8 @@ service = NotaRepository()
 @router.get("/matricula/{matricula_id}", response_model=list[NotaSchema])
 def listar_notas(matricula_id: int):
     return service.get_by_matricula(matricula_id)
+
+@router.post("/", response_model=NotaSchema)
+def criar_nota(n: CreateNotaSchema):
+    id = service.create(n.model_dump())
+    return service.get_by_matricula(n.matricula_id)[-1]

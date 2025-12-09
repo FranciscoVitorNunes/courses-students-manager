@@ -8,3 +8,8 @@ class NotaRepository:
         self.cursor.execute("SELECT * FROM nota WHERE matricula_id = ?", (matricula_id,))
         return [dict(r) for r in self.cursor.fetchall()]
 
+    def create(self, dados: dict):
+        sql = "INSERT INTO nota (matricula_id, avaliacao, nota) VALUES (?, ?, ?)"
+        self.cursor.execute(sql, (dados["matricula_id"], dados["avaliacao"], dados["nota"]))
+        self.conn.commit()
+        return self.cursor.lastrowid
