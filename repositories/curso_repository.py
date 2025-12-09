@@ -1,6 +1,6 @@
 from database.connection import  SQLiteConnection
 from models.curso import Curso
-from schemas.curso_schema import CursoSchema
+from schemas.curso_schema import CursoSchema, UpdateCursoSchema
 
 class CursoRepository:
     def __init__(self):
@@ -34,7 +34,7 @@ class CursoRepository:
         self.conn.commit()
         print("Curso criado com sucesso!")
 
-    def get_by_codigo(self, codigo_curso) -> Curso | None:
+    def get_by_codigo(self, codigo_curso) -> CursoSchema | None:
         sql = """
             SELECT * FROM curso WHERE codigo = ?;
         """
@@ -59,16 +59,39 @@ class CursoRepository:
         self.conn.commit()
         print("Deletado com sucesso!")
 
-    def update(self, curso: Curso):
-        sql = """
+    def update(self, codigo: str, dados: dict):
+        campos = []
+        valores = []
+
+        if "nome" in dados:
+            campos.append("nome = ?")
+            valores.append(dados["nome"])
+
+        if "carga_horaria" in dados:
+            campos.append("carga_horaria = ?")
+            valores.append(dados["carga_horaria"])
+
+        if "ementa" in dados:
+            campos.append("ementa = ?")
+            valores.append(dados["ementa"])
+
+        if not campos:
+            return False 
+
+        sql = f"""
             UPDATE curso
-            SET nome = ?, carga_horaria = ?, ementa = ?
+            SET {", ".join(campos)}
             WHERE codigo = ?;
         """
+        valores.append(codigo)
 
-        self.cursor.execute(sql, (curso.nome, curso.carga_horaria, curso.ementa, curso.codigo))
+        self.cursor.execute(sql, tuple(valores))
         self.conn.commit()
-        print("Curso atualizado com sucesso!")
+
+        self.cursor.execute("SELECT changes();")
+        alterados = self.cursor.fetchone()[0]
+
+        return alterados > 0
 
 
     def create_prerequisitos(self, codigo_curso,prerequisito_curso):

@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from fastapi import APIRouter
 from repositories.curso_repository import CursoRepository
-from schemas.curso_schema import CursoSchema
+from schemas.curso_schema import CursoSchema, UpdateCursoSchema
 
 router = APIRouter(prefix="/cursos", tags=["Cursos"])
 service = CursoRepository()
@@ -29,16 +29,16 @@ def buscar_por_codigo(codigo: str):
 def deletar(codigo: str):
     service.delete(codigo)
 
-@router.patch("/{matricula}")
-def atualizar(matricula: str, aluno: CursoSchema):
-    dados = aluno.model_dump(exclude_none=True)
+@router.patch("/{codigo}")
+def atualizar(codigo: str, curso: UpdateCursoSchema):
+    dados = curso.model_dump(exclude_none=True)
 
-    atualizado = service.atualizar(matricula, dados)
+    atualizado = service.update(codigo, dados)
 
     if not atualizado:
         raise HTTPException(
             status_code=404,
-            detail="Aluno não encontrado ou nada para atualizar"
+            detail="Curso não encontrado ou nada para atualizar"
         )
 
-    return {"message": "Aluno atualizado parcialmente"}
+    return {"message": "Curso atualizado parcialmente"}
