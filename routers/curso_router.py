@@ -18,12 +18,12 @@ def criar(curso: CursoSchema):
         raise HTTPException(status_code=400, detail="Erro ao criar curso")
 
 
-@router.get("/{matricula}")
-def buscar_por_matricula(matricula: str):
-    aluno = service.buscar_por_matricula(matricula)
-    if not aluno:
-        raise HTTPException(status_code=404, detail="Aluno não encontrado")
-    return aluno
+@router.get("/{codigo}")
+def buscar_por_codigo(codigo: str):
+    curso = service.get_by_codigo(codigo)
+    if not curso:
+        raise HTTPException(status_code=404, detail="Curso não encontrado")
+    return curso
 
 @router.delete("/{matricula}")
 def deletar(matricula: str):
