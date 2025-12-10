@@ -14,3 +14,10 @@ def criar_frequencia(f: CreateFrequenciaSchema):
 @router.get("/matricula/{matricula_id}", response_model=list[FrequenciaSchema])
 def listar_frequencias(matricula_id: int):
     return service.get_by_matricula(matricula_id)
+
+@router.delete("/{id}")
+def deletar_frequencia(id: int):
+    sucesso = service.delete(id)
+    if not sucesso:
+        raise HTTPException(status_code=404, detail="Frequência não encontrada")
+    return {"message": "Frequência deletada"}

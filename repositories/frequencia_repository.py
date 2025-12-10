@@ -13,3 +13,9 @@ class FrequenciaRepository:
     def get_by_matricula(self, matricula_id: int):
         self.cursor.execute("SELECT * FROM frequencia WHERE matricula_id = ?", (matricula_id,))
         return [dict(r) for r in self.cursor.fetchall()]
+    
+    def delete(self, id: int):
+        self.cursor.execute("DELETE FROM frequencia WHERE id = ?", (id,))
+        self.conn.commit()
+        self.cursor.execute("SELECT changes();")
+        return self.cursor.fetchone()[0] > 0
