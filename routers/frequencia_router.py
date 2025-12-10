@@ -10,3 +10,7 @@ service = FrequenciaRepository()
 def criar_frequencia(f: CreateFrequenciaSchema):
     id = service.create(f.model_dump())
     return service.get_by_matricula(f.matricula_id)[-1]
+
+@router.get("/matricula/{matricula_id}", response_model=list[FrequenciaSchema])
+def listar_frequencias(matricula_id: int):
+    return service.get_by_matricula(matricula_id)

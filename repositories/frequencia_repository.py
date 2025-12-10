@@ -9,3 +9,7 @@ class FrequenciaRepository:
         self.cursor.execute(sql, (dados["matricula_id"], dados["data"], dados["presenca"]))
         self.conn.commit()
         return self.cursor.lastrowid
+    
+    def get_by_matricula(self, matricula_id: int):
+        self.cursor.execute("SELECT * FROM frequencia WHERE matricula_id = ?", (matricula_id,))
+        return [dict(r) for r in self.cursor.fetchall()]
