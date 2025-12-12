@@ -1,97 +1,164 @@
-from database.connection import  SQLiteConnection
+# repositories/aluno_repository.py
+from database.connection import SQLiteConnection
 from schemas.aluno_schema import AlunoSchema
+from typing import Optional, List
+
 
 class AlunoRepository:
     def __init__(self):
-        self.conn , self.cursor = SQLiteConnection.get_connection()
+        self.conn, self.cursor = SQLiteConnection.get_connection()
     
-    def salvar(self, aluno: AlunoSchema):
-        sql= """
-            INSERT INTO aluno(matricula, nome, email, cr) VALUES (?, ?, ?, ?)
+    def salvar(self, aluno: AlunoSchema) -> bool:
         """
-
-        self.cursor.execute(sql, (aluno.matricula, aluno.nome, aluno.email, aluno.cr))
-        self.conn.commit()
-        print("Aluno criado com sucesso!")
-
-    def buscar_por_matricula(self, matricula: str) -> AlunoSchema | None:
+        Args:
+            aluno: Dados do aluno.
+            
+        Returns:
+            True se salvo com sucesso.
+        """
         sql = """
-            SELECT * FROM aluno WHERE matricula = ?;
+            INSERT INTO aluno(matricula, nome, email, cr) 
+            VALUES (?, ?, ?, ?)
         """
-
-        self.cursor.execute(sql, (matricula, ))
+        
+        try:
+            self.cursor.execute(sql, (
+                aluno.matricula, 
+                aluno.nome, 
+                aluno.email, 
+                aluno.cr or 0.0
+            ))
+            self.conn.commit()
+            return True
+        except Exception as e:
+            self.conn.rollback()
+            raise ValueError(f"Erro ao salvar aluno: {str(e)}")
+    
+    def buscar_por_matricula(self, matricula: str) -> Optional[AlunoSchema]:
+        """
+        Args:
+            matricula: Matrícula do aluno.
+            
+        Returns:
+            AlunoSchema se encontrado, None caso contrário.
+        """
+        sql = """
+            SELECT matricula, nome, email, cr FROM aluno 
+            WHERE matricula = ?;
+        """
+        
+        self.cursor.execute(sql, (matricula,))
         row = self.cursor.fetchone()
-        print("debugg row ==>", row)
+        
         if row is None:
             return None
-
-        return  AlunoSchema(
-                matricula=row['matricula'], 
-                nome=row['nome'], 
-                email=row['email'], 
-                cr=row['cr']
-            ) 
+        
+        return AlunoSchema(
+            matricula=row['matricula'],
+            nome=row['nome'],
+            email=row['email'],
+            cr=row['cr']
+        )
     
-    def listar(self) -> list[AlunoSchema] :
-        sql = """
-            SELECT * FROM aluno;
+    def listar(self) -> List[AlunoSchema]:
         """
-
+        Returns:
+            Lista de AlunoSchema.
+        """
+        sql = """
+            SELECT matricula, nome, email, cr FROM aluno;
+        """
+        
         self.cursor.execute(sql)
-        all_row = self.cursor.fetchall()
-
-        alunos = [
+        rows = self.cursor.fetchall()
+        
+        return [
             AlunoSchema(
-                matricula=row['matricula'], 
-                nome=row['nome'], 
-                email=row['email'], 
+                matricula=row['matricula'],
+                nome=row['nome'],
+                email=row['email'],
                 cr=row['cr']
-            ) 
-                for row in all_row
+            ) for row in rows
         ]
-        return alunos
     
-    def deletar(self, matricula: str):
+    def deletar(self, matricula: str) -> bool:
+        """
+        Args:
+            matricula: Matrícula do aluno.
+            
+        Returns:
+            True se deletado, False caso contrário.
+        """
         sql = """
             DELETE FROM aluno WHERE matricula = ?;
         """
         
-        self.cursor.execute(sql, (matricula, ))
-        self.conn.commit()
-        print("Deletado com sucesso!")
+        try:
+            self.cursor.execute(sql, (matricula,))
+            self.conn.commit()
+            
+            # Verificar se alguma linha foi afetada
+            self.cursor.execute("SELECT changes();")
+            alterados = self.cursor.fetchone()[0]
+            
+            return alterados > 0
+        except Exception as e:
+            self.conn.rollback()
+            raise ValueError(f"Erro ao deletar aluno: {str(e)}")
     
-        return 
-    
-    def atualizar(self, matricula: str,dados: dict):
+    def atualizar(self, matricula: str, dados: dict) -> bool:
+        """
+        Args:
+            matricula: Matrícula do aluno.
+            dados: Dicionário com campos a atualizar.
+            
+        Returns:
+            True se atualizado, False caso contrário.
+        """
+        if not dados:
+            return False
+        
         campos = []
         valores = []
-
-        if "nome" in dados:
-            campos.append("nome = ?")
-            valores.append(dados["nome"])
-
-        if "email" in dados:
-            campos.append("email = ?")
-            valores.append(dados["email"])
-
-        if "cr" in dados:
-            campos.append("cr = ?")
-            valores.append(dados["cr"])
-
+        
+        for campo, valor in dados.items():
+            if campo in ['nome', 'email', 'cr']:
+                campos.append(f"{campo} = ?")
+                valores.append(valor)
+        
         if not campos:
-            return False 
-
+            return False
+        
         sql = f"""
             UPDATE aluno
             SET {", ".join(campos)}
             WHERE matricula = ?;
         """
         valores.append(matricula)
-
-        self.cursor.execute(sql, tuple(valores))
-        self.conn.commit()
-
-        self.cursor.execute("SELECT changes();")
-        alterados = self.cursor.fetchone()[0]
-
-        return alterados > 0
+        
+        try:
+            self.cursor.execute(sql, tuple(valores))
+            self.conn.commit()
+            
+            self.cursor.execute("SELECT changes();")
+            alterados = self.cursor.fetchone()[0]
+            
+            return alterados > 0
+        except Exception as e:
+            self.conn.rollback()
+            raise ValueError(f"Erro ao atualizar aluno: {str(e)}")
+    
+    def existe_matricula(self, matricula: str) -> bool:
+        """
+        Args:
+            matricula: Matrícula a verificar.
+            
+        Returns:
+            True se existe, False caso contrário.
+        """
+        sql = """
+            SELECT 1 FROM aluno WHERE matricula = ? LIMIT 1;
+        """
+        
+        self.cursor.execute(sql, (matricula,))
+        return self.cursor.fetchone() is not None
