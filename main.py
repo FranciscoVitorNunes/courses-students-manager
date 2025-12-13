@@ -9,8 +9,13 @@ from routers import frequencia_router
 app = FastAPI(title="Gerenciador de Cursos e Alunos")
 
 @app.get("/")
-def teste():
-    return "Gerenciador de Cursos e Alunos"
+def home():
+    return {
+        "message": "Gerenciador de Cursos e Alunos",
+        "version": "1.0.0",
+        "docs": "/docs",
+        "redoc": "/redoc"
+    }
 
 app.include_router(aluno_router.router)
 app.include_router(curso_router.router)
