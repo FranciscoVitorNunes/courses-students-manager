@@ -79,6 +79,32 @@ def create_tables():
             FOREIGN KEY(matricula_id) REFERENCES matricula(id) ON DELETE CASCADE
     );
     """
+    historico_aluno_table = """
+    CREATE TABLE IF NOT EXISTS historico_aluno (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        aluno_matricula TEXT NOT NULL,
+        codigo_curso TEXT NOT NULL,
+        nota REAL NOT NULL,
+        frequencia REAL NOT NULL,
+        carga_horaria INTEGER NOT NULL,
+        situacao TEXT NOT NULL,
+        semestre TEXT,
+        data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(aluno_matricula) REFERENCES aluno(matricula) ON DELETE CASCADE,
+        FOREIGN KEY(codigo_curso) REFERENCES curso(codigo) ON DELETE SET NULL
+    );
+    """
+
+    historico_indices = """
+    CREATE INDEX IF NOT EXISTS idx_historico_aluno_matricula 
+    ON historico_aluno(aluno_matricula);
+    
+    CREATE INDEX IF NOT EXISTS idx_historico_codigo_curso 
+    ON historico_aluno(codigo_curso);
+    
+    CREATE INDEX IF NOT EXISTS idx_historico_situacao 
+    ON historico_aluno(situacao);
+    """
 
     try:
         cursor.execute(aluno_table)
@@ -89,7 +115,12 @@ def create_tables():
         cursor.execute(matricula_table)
         cursor.execute(nota_table)
         cursor.execute(frequencia_table)
-
+        cursor.execute(historico_aluno_table)
+        
+        for index_sql in historico_indices.split(';'):
+            if index_sql.strip():
+                cursor.execute(index_sql)
+        
         connection.commit()
         print("\nTabelas criadas com sucesso!")
         return True

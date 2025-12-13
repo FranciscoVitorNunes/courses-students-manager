@@ -2,6 +2,7 @@
 from fastapi import HTTPException, APIRouter
 from services.aluno_service import AlunoService
 from schemas.aluno_schema import AlunoSchema, UpdateAlunoSchema
+from schemas.historico_schema import HistoricoCreateSchema, HistoricoUpdateSchema
 
 router = APIRouter(prefix="/alunos", tags=["Alunos"])
 service = AlunoService()
@@ -138,4 +139,132 @@ def obter_top_alunos(n: int = 10):
         raise HTTPException(
             status_code=500, 
             detail=f"Erro ao obter top alunos: {str(e)}"
+        )
+    
+
+@router.get("/{matricula}/historico")
+def obter_historico_aluno(matricula: str):
+    """
+    Obtém o histórico completo de um aluno.
+    """
+    try:
+        historico = service.obter_historico_aluno(matricula)
+        return {
+            "matricula": matricula,
+            "historico": historico
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Erro ao obter histórico: {str(e)}"
+        )
+
+@router.post("/{matricula}/historico")
+def adicionar_ao_historico(matricula: str, historico: HistoricoCreateSchema):
+    """
+    Adiciona um registro ao histórico do aluno.
+    """
+    try:
+        registro = service.adicionar_ao_historico(matricula, historico.model_dump())
+        return {
+            "message": "Registro adicionado ao histórico com sucesso!",
+            "registro": registro
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Erro ao adicionar ao histórico: {str(e)}"
+        )
+
+@router.put("/historico/{registro_id}")
+def atualizar_registro_historico(registro_id: int, historico: HistoricoUpdateSchema):
+    """
+    Atualiza um registro do histórico.
+    """
+    try:
+        atualizado = service.atualizar_registro_historico(
+            registro_id, 
+            historico.model_dump(exclude_none=True)
+        )
+        
+        if not atualizado:
+            raise HTTPException(status_code=404, detail="Registro não encontrado")
+        
+        return {"message": "Registro atualizado com sucesso!"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Erro ao atualizar registro: {str(e)}"
+        )
+
+@router.delete("/historico/{registro_id}")
+def remover_registro_historico(registro_id: int):
+    """
+    Remove um registro do histórico.
+    """
+    try:
+        removido = service.remover_do_historico(registro_id)
+        
+        if not removido:
+            raise HTTPException(status_code=404, detail="Registro não encontrado")
+        
+        return {"message": "Registro removido com sucesso!"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Erro ao remover registro: {str(e)}"
+        )
+
+@router.get("/{matricula}/estatisticas")
+def obter_estatisticas_aluno(matricula: str):
+    """
+    Obtém estatísticas do aluno.
+    """
+    try:
+        estatisticas = service.get_estatisticas_aluno(matricula)
+        if not estatisticas:
+            raise HTTPException(status_code=404, detail="Aluno não encontrado")
+        
+        return {
+            "matricula": matricula,
+            "estatisticas": estatisticas
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Erro ao obter estatísticas: {str(e)}"
+        )
+
+@router.post("/{matricula}/recalcular-cr")
+def recalcular_cr_aluno(matricula: str):
+    """
+    Recalcula e atualiza o CR do aluno.
+    """
+    try:
+        atualizado = service.atualizar_cr_aluno(matricula)
+        if not atualizado:
+            raise HTTPException(status_code=404, detail="Aluno não encontrado")
+        
+        aluno = service.buscar_aluno(matricula)
+        return {
+            "message": "CR recalculado com sucesso!",
+            "matricula": matricula,
+            "cr": aluno.cr if aluno else 0.0
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Erro ao recalcular CR: {str(e)}"
         )
