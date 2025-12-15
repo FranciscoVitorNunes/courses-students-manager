@@ -37,6 +37,7 @@ def create_tables():
         periodo TEXT,
         vagas INTEGER,
         curso_codigo TEXT,
+        local TEXT,
         FOREIGN KEY (curso_codigo) REFERENCES curso(codigo)
     );
     """
