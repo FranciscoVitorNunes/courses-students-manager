@@ -79,8 +79,26 @@ pip install -r requirements.txt
 # Criar o Banco de Dados de Teste
 python database/setup.py
 
-# Rodar com verbosidade
-pytest -v
+# Instalar dependências de teste
+pip install -r requirements-test.txt
+
+# Executar todos os testes
+python run_tests.py
+
+# Executar testes específicos
+pytest tests/test_alunos.py -v
+pytest tests/test_cursos.py -v
+pytest tests/test_turmas.py -v
+pytest tests/test_matriculas.py -v
+
+# Executar testes de serviços
+pytest tests/test_services/ -v
+
+# Executar testes de modelos
+pytest tests/test_models/ -v
+
+# Executar com cobertura de código
+pytest --cov=. --cov-report=html
 ```
 
 ---

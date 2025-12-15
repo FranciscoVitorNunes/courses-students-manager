@@ -55,44 +55,66 @@ class TurmaService:
     def buscar_turma(self, turma_id: str, incluir_detalhes: bool = True) -> Optional[Turma]:
         """
         Busca uma turma pelo ID.
-        
-        Args:
-            turma_id: ID da turma.
-            incluir_detalhes: Se True, inclui detalhes completos do curso.
-            
-        Returns:
-            Objeto Turma se encontrado, None caso contrário.
         """
+        print(f"🔍 TURMA_SERVICE.buscar_turma: Iniciando busca para turma_id = '{turma_id}'")
+        
         # Buscar turma no banco
         turma_dict = self.repository.get_by_id(turma_id)
+        
+        print(f"🔍 TURMA_SERVICE.buscar_turma: Resultado do repository = {turma_dict}")
+        
         if not turma_dict:
+            print(f"❌ TURMA_SERVICE.buscar_turma: Turma não encontrada no repository")
             return None
+        
+        print(f"✅ TURMA_SERVICE.buscar_turma: Turma encontrada no repository")
         
         # Buscar curso
         curso_codigo = turma_dict.get('curso_codigo')
         if not curso_codigo:
+            print(f"❌ TURMA_SERVICE.buscar_turma: curso_codigo não encontrado no dicionário")
             return None
         
+        print(f"🔍 TURMA_SERVICE.buscar_turma: Buscando curso '{curso_codigo}'...")
         curso = self.curso_service.buscar_curso(curso_codigo, incluir_prerequisitos=False)
+        
+        print(f"🔍 TURMA_SERVICE.buscar_turma: Resultado da busca do curso = {curso}")
+        
         if not curso:
+            print(f"❌ TURMA_SERVICE.buscar_turma: Curso não encontrado")
             return None
+        
+        print(f"✅ TURMA_SERVICE.buscar_turma: Curso encontrado")
         
         # Criar objeto Turma
-        turma = Turma(
-            id=turma_dict['id'],
-            periodo=turma_dict['periodo'],
-            horarios=turma_dict['horarios'],
-            vagas=turma_dict['vagas'],
-            curso=curso,
-            local=turma_dict.get('local')
-        )
-        
-        # Atualizar status baseado nas matrículas (se houver)
-        if 'matriculas' in turma_dict:
-            for matricula in turma_dict['matriculas']:
-                turma.adicionar_matricula(matricula)
-        
-        return turma
+        try:
+            print(f"🔍 TURMA_SERVICE.buscar_turma: Criando objeto Turma...")
+            print(f"   id: {turma_dict['id']}")
+            print(f"   periodo: {turma_dict['periodo']}")
+            print(f"   vagas: {turma_dict['vagas']}")
+            print(f"   horarios: {turma_dict['horarios']}")
+            print(f"   curso: {curso}")
+            print(f"   local: {turma_dict.get('local')}")
+            
+            turma = Turma(
+                id=turma_dict['id'],
+                periodo=turma_dict['periodo'],
+                horarios=turma_dict['horarios'],
+                vagas=turma_dict['vagas'],
+                curso=curso,
+                local=turma_dict.get('local')
+            )
+            
+            print(f"✅ TURMA_SERVICE.buscar_turma: Objeto Turma criado com sucesso: {turma}")
+            print(f"✅ TURMA_SERVICE.buscar_turma: Turma.id = '{turma.id}'")
+            print(f"✅ TURMA_SERVICE.buscar_turma: Retornando turma...")
+            return turma
+            
+        except Exception as e:
+            print(f"❌ TURMA_SERVICE.buscar_turma: ERRO ao criar objeto Turma: {e}")
+            import traceback
+            traceback.print_exc()
+            return None
     
     def listar_turmas(self, periodo: Optional[str] = None, 
                      curso_codigo: Optional[str] = None,

@@ -1,4 +1,4 @@
-from connection import SQLiteConnection
+from database.connection import SQLiteConnection
 
 
 def create_tables():
@@ -57,28 +57,15 @@ def create_tables():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             aluno_matricula TEXT NOT NULL,
             turma_id TEXT NOT NULL,
-            situacao TEXT NOT NULL DEFAULT 'cursando',
+            nota REAL,
+            frequencia REAL,
+            situacao TEXT NOT NULL DEFAULT 'CURSANDO',
+            data_matricula TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            data_conclusao TIMESTAMP,
             FOREIGN KEY(aluno_matricula) REFERENCES aluno(matricula) ON DELETE CASCADE,
-            FOREIGN KEY(turma_id) REFERENCES turma(id) ON DELETE CASCADE
-    );
-    """
-    nota_table = """
-        CREATE TABLE IF NOT EXISTS nota (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            matricula_id INTEGER NOT NULL,
-            avaliacao TEXT NOT NULL,
-            nota REAL NOT NULL,
-            FOREIGN KEY(matricula_id) REFERENCES matricula(id) ON DELETE CASCADE
-     );
-    """
-    frequencia_table = """
-        CREATE TABLE IF NOT EXISTS frequencia (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            matricula_id INTEGER NOT NULL,
-            data TEXT NOT NULL,
-            presenca INTEGER NOT NULL,
-            FOREIGN KEY(matricula_id) REFERENCES matricula(id) ON DELETE CASCADE
-    );
+            FOREIGN KEY(turma_id) REFERENCES turma(id) ON DELETE CASCADE,
+            UNIQUE(aluno_matricula, turma_id)
+        );
     """
     historico_aluno_table = """
     CREATE TABLE IF NOT EXISTS historico_aluno (
@@ -114,8 +101,6 @@ def create_tables():
         cursor.execute(turma_table)
         cursor.execute(horario_turma_table)
         cursor.execute(matricula_table)
-        cursor.execute(nota_table)
-        cursor.execute(frequencia_table)
         cursor.execute(historico_aluno_table)
         
         for index_sql in historico_indices.split(';'):
