@@ -10,10 +10,6 @@ class Turma(Oferta):
     Possui vínculo com um curso, controla o status (aberta/fechada) e registra matrículas.
     """
 
-    STATUS_ABERTA = "aberta"
-    STATUS_FECHADA = "fechada"
-    STATUS_ESGOTADA = "esgotada"
-
     def __init__(self, id: str, periodo: str, horarios: Dict[str, str], 
                  vagas: int, curso: Curso, local: Optional[str] = None):
         """

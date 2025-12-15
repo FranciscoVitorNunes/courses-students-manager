@@ -38,6 +38,7 @@ def create_tables():
         vagas INTEGER,
         curso_codigo TEXT,
         local TEXT,
+        status BOOLEAN,
         FOREIGN KEY (curso_codigo) REFERENCES curso(codigo)
     );
     """
