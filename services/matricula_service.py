@@ -1,4 +1,3 @@
-# services/matricula_service.py
 from typing import List, Optional, Dict, Any, Tuple
 from models.matricula import Matricula
 from models.aluno import Aluno
@@ -52,29 +51,19 @@ class MatriculaService:
         aluno_matricula = matricula_data.aluno_matricula
         turma_id = matricula_data.turma_id
         
-        print(f"🔍 MATRICULA_SERVICE.criar_matricula: aluno={aluno_matricula}, turma={turma_id}")
-        print(f"🔍 MATRICULA_SERVICE: Tipo de turma_id: {type(turma_id)}, Valor: '{turma_id}'")
-        
         # 1. Verificar se aluno existe
         aluno = self.aluno_service.buscar_aluno(aluno_matricula)
         if not aluno:
-            print(f"❌ MATRICULA_SERVICE: Aluno {aluno_matricula} não encontrado")
             raise ValueError(f"Aluno {aluno_matricula} não encontrado.")
         
         # 2. Verificar se turma existe
-        print(f"🔍 MATRICULA_SERVICE: Buscando turma com turma_service.buscar_turma('{turma_id}')")
         turma = self.turma_service.buscar_turma(turma_id)
-        
         if not turma:
-            print(f"❌ MATRICULA_SERVICE: Turma {turma_id} não encontrada pelo turma_service")
             # Verificar se existe direto no repository
             from repositories.turma_repository import TurmaRepository
             turma_repo = TurmaRepository()
             turma_dict = turma_repo.get_by_id(turma_id)
-            print(f"🔍 MATRICULA_SERVICE: Verificação direta no repository: {turma_dict}")
             raise ValueError(f"Turma {turma_id} não encontrada.")
-        
-        print(f"✅ MATRICULA_SERVICE: Turma encontrada: {turma.id}")
         
         # 3. Verificar se já está matriculado
         if self.repository.existe_matricula(aluno_matricula, turma_id):

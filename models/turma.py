@@ -256,3 +256,6 @@ class Turma(Oferta):
     def __repr__(self) -> str:
         """Representação técnica da turma."""
         return f"Turma(id='{self.id}', curso='{self.curso.codigo}', periodo='{self.periodo}', status='{self.status}')"
+    
+    def __bool__(self) -> bool:
+        return bool(self.id) and self.id is not None
