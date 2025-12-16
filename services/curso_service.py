@@ -182,7 +182,6 @@ class CursoService:
             raise ValueError(f"O curso {prerequisito_codigo} já é pré-requisito de {curso_codigo}.")
         
         # Verificar se há ciclo (curso sendo pré-requisito do seu pré-requisito)
-        # Para isso, precisamos verificar recursivamente
         if self._verificar_ciclo_prerequisitos(curso_codigo, prerequisito_codigo):
             raise ValueError(
                 f"Não é possível adicionar {prerequisito_codigo} como pré-requisito de {curso_codigo}. "
@@ -208,32 +207,16 @@ class CursoService:
         Returns:
             True se houver ciclo, False caso contrário.
         """
-        visitados = set()
-        
-        def dfs(codigo_atual: str) -> bool:
-            """Busca em profundidade para detectar ciclos."""
-            if codigo_atual == curso_codigo:
-                return True  # Ciclo detectado: o curso é pré-requisito de si mesmo
-            
-            if codigo_atual in visitados:
-                return False  # Já visitado, mas não encontrou ciclo ainda
-            
-            visitados.add(codigo_atual)
-            
-            # Obter pré-requisitos do curso atual
-            curso_atual = self.buscar_curso(codigo_atual)
-            if not curso_atual:
-                return False
-            
-            # Verificar recursivamente todos os pré-requisitos
-            for prereq in curso_atual.prerequisitos:
-                if dfs(prereq):
-                    return True
-            
+
+        curso_prerequisito = self.obter_prerequisitos(novo_prerequisito)
+        print(curso_prerequisito)
+
+        if curso_codigo in curso_prerequisito:
+            print("ffalse")
+            return True
+        else:
+            print("true")
             return False
-        
-        # Começar a busca a partir do novo pré-requisito
-        return dfs(novo_prerequisito)
     
     def remover_prerequisito(self, curso_codigo: str, prerequisito_codigo: str) -> bool:
         """

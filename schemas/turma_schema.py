@@ -9,10 +9,10 @@ class TurmaBase(BaseModel):
     curso: str = Field(..., description="Código do curso")
     horarios: Dict[str, str] = Field(..., description="Horários no formato {dia: 'HH:MM-HH:MM'}")
     local: Optional[str] = Field(None, max_length=100, description="Local da turma")
+    status: bool = Field(description="Define se a turma está aberta(true) ou fechada(false)")
     
     @validator('periodo')
     def validar_periodo(cls, v):
-        # Validar formato YYYY.S (ex: 2025.1, 2025.2)
         if not v or '.' not in v:
             raise ValueError("Período deve estar no formato YYYY.S (ex: 2025.1)")
         
@@ -71,7 +71,8 @@ class UpdateTurmaSchema(BaseModel):
     vagas: Optional[int] = Field(None, gt=0)
     horarios: Optional[Dict[str, str]] = Field(None)
     local: Optional[str] = Field(None, max_length=100)
-    
+    status: Optional[bool] = Field(None)
+
     @validator('periodo')
     def validar_periodo(cls, v):
         if v is None:

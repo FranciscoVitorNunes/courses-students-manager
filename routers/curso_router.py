@@ -191,7 +191,6 @@ def obter_prerequisitos_curso(
     try:
         prerequisitos = curso_service.obter_prerequisitos(codigo)
         
-        # Verificar se o curso existe
         curso = curso_service.buscar_curso(codigo)
         if not curso:
             raise HTTPException(status_code=404, detail="Curso não encontrado")
@@ -244,7 +243,6 @@ def obter_cursos_dependentes(
     try:
         dependentes = curso_service.obter_cursos_com_prerequisito(curso_codigo)
         
-        # Verificar se o curso existe
         curso = curso_service.buscar_curso(curso_codigo)
         if not curso:
             raise HTTPException(status_code=404, detail="Curso não encontrado")
