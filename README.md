@@ -26,12 +26,6 @@ Essa estrutura permite uma arquitetura modular, escalável e aderente aos princ�
 
 ---
 
-## 📊 Diagrama de Classes
-
-![Diagrama de Classes](diagrama-de-classes.png)
-
----
-
 ## 🛠️ Tecnologias Utilizadas
 
 O projeto será desenvolvido utilizando:
