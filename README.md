@@ -21,9 +21,6 @@ A modelagem do sistema é organizada em torno das seguintes classes principais:
 - **Oferta**: classe genérica representando uma oferta acadêmica em um período, com horários e vagas.
 - **Turma**: herda de Oferta e vincula alunos a um curso específico em um período, permitindo lançamento de notas e frequência.
 - **Matrícula**: registra o vínculo entre aluno e turma, armazenando nota, frequência, situação e controle de trancamento.
-- **Configuração do Sistema**: centraliza parâmetros globais utilizados pelas regras do sistema.
-- **Regra de Aprovação**: avalia a situação da matrícula com base nas configurações definidas.
-- **Relatório**: responsável pela geração de informações consolidadas do sistema (ex.: taxa de aprovação, distribuição de notas, ranking de alunos).
 
 Essa estrutura permite uma arquitetura modular, escalável e aderente aos princípios de POO, garantindo que cada classe possua responsabilidade única e bem definida.
 
@@ -44,7 +41,6 @@ O projeto será desenvolvido utilizando:
 | **Python** | Linguagem de programação principal do sistema | ✅ Ativo |
 | **FastAPI** | Framework para criação da API REST com validação automática e documentação gerada | ✅ Ativo |
 | **SQLite** | Banco de dados leve utilizado para persistência de informações | ✅ Ativo |
-| **SQLAlchemy** | ORM para gerenciamento de banco de dados | ⏳ Planejado |
 | **Pydantic** | Validação e serialização de dados | ✅ Ativo |
 | **pytest** | Framework para testes automatizados | ✅ Ativo |
 | **Git** | Controle de versão do código | ✅ Ativo |
@@ -79,26 +75,15 @@ pip install -r requirements.txt
 # Criar o Banco de Dados de Teste
 python database/setup.py
 
-# Instalar dependências de teste
-pip install -r requirements-test.txt
-
 # Executar todos os testes
-python run_tests.py
+pytest -v
+```
 
-# Executar testes específicos
-pytest tests/test_alunos.py -v
-pytest tests/test_cursos.py -v
-pytest tests/test_turmas.py -v
-pytest tests/test_matriculas.py -v
+### Executar o programa
 
-# Executar testes de serviços
-pytest tests/test_services/ -v
-
-# Executar testes de modelos
-pytest tests/test_models/ -v
-
-# Executar com cobertura de código
-pytest --cov=. --cov-report=html
+```bash
+# Executa e modo desenvolvedor e com reload
+uvicorn main:app --reload
 ```
 
 ---
