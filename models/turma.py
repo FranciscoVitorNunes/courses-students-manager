@@ -11,7 +11,7 @@ class Turma(Oferta):
     """
 
     def __init__(self, id: str, periodo: str, horarios: Dict[str, str], 
-                 vagas: int, curso: Curso, local: Optional[str] = None):
+                 vagas: int, curso: Curso, local: Optional[str] = None, status: bool=True):
         """
         Inicializa uma turma vinculada a um curso.
 
@@ -33,7 +33,7 @@ class Turma(Oferta):
         
         self._curso = curso
         self._local = local.strip() if local else None
-        self._status = self.STATUS_ABERTA
+        self._status = status
         self._matriculas = []
     
     @classmethod
@@ -56,7 +56,11 @@ class Turma(Oferta):
             curso=curso,
             local=data.get('local')
         )
-
+    @property
+    def id(self):
+        """Retorna ID da turna"""
+        return self._id
+    
     @property
     def curso(self) -> Curso:
         """Retorna o curso ao qual a turma pertence."""
@@ -82,13 +86,13 @@ class Turma(Oferta):
         """Retorna uma cópia das matrículas registradas na turma."""
         return self._matriculas.copy()
 
-    def abrir(self) -> None:
+    def abrir(self):
         """Altera o status da turma para aberta."""
-        self._status = self.STATUS_ABERTA
+        self._status = True
 
-    def fechar(self) -> None:
+    def fechar(self):
         """Altera o status da turma para fechada."""
-        self._status = self.STATUS_FECHADA
+        self._status = False
 
     def atualizar_status_vagas(self) -> None:
         """
@@ -96,9 +100,9 @@ class Turma(Oferta):
         Se todas as vagas estiverem ocupadas, status muda para "esgotada".
         """
         if self.vagas_ocupadas() >= self.vagas:
-            self._status = self.STATUS_ESGOTADA
-        elif self._status == self.STATUS_ESGOTADA:
-            self._status = self.STATUS_ABERTA
+            self._status = False
+        else:
+            self._status = True
 
     def adicionar_matricula(self, matricula) -> bool:
         """
@@ -160,7 +164,7 @@ class Turma(Oferta):
         Returns:
             bool: True se aberta e com vagas disponíveis.
         """
-        return self._status == self.STATUS_ABERTA and self.vagas_disponiveis() > 0
+        return self._status == True 
 
     def verificar_choque_com_turma(self, outra_turma: 'Turma') -> bool:
         """
@@ -245,7 +249,7 @@ class Turma(Oferta):
 
     def __str__(self) -> str:
         """Representação amigável da turma."""
-        status_str = f" ({self.status})" if self.status != self.STATUS_ABERTA else ""
+        status_str = f" ({self.status})" if self.status != True else ""
         local_str = f" - Local: {self.local}" if self.local else ""
         return f"Turma {self.id} - {self.curso.nome} - {self.periodo}{status_str}{local_str}"
 

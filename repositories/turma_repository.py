@@ -22,8 +22,8 @@ class TurmaRepository:
             ValueError: Se ocorrer erro ao salvar.
         """
         sql_turma = """
-            INSERT INTO turma(id, periodo, vagas, curso_codigo, local) 
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO turma(id, periodo, vagas, curso_codigo, local, status) 
+            VALUES (?, ?, ?, ?, ?, ?)
         """
         
         try:
@@ -32,7 +32,8 @@ class TurmaRepository:
                 turma.periodo, 
                 turma.vagas, 
                 turma.curso.codigo,
-                turma.local
+                turma.local,
+                turma.status
             ))
             
             sql_horario = """
@@ -64,7 +65,7 @@ class TurmaRepository:
             Dicionário com dados da turma, ou None se não encontrada.
         """
         sql_turma = """
-            SELECT id, periodo, vagas, curso_codigo, local 
+            SELECT id, periodo, vagas, curso_codigo, local, status
             FROM turma 
             WHERE id = ?
         """
@@ -98,7 +99,8 @@ class TurmaRepository:
             "vagas": row["vagas"],
             "curso_codigo": row["curso_codigo"],
             "local": row["local"],
-            "horarios": horarios_dict
+            "horarios": horarios_dict,
+            "status": row["status"]
         }
     
     def list_all(self) -> List[Dict[str, Any]]:
@@ -109,7 +111,7 @@ class TurmaRepository:
             Lista de dicionários com dados das turmas.
         """
         sql_turmas = """
-            SELECT id, periodo, vagas, curso_codigo, local 
+            SELECT id, periodo, vagas, curso_codigo, local, status
             FROM turma 
             ORDER BY periodo DESC, id
         """
@@ -152,7 +154,8 @@ class TurmaRepository:
                 "vagas": row["vagas"],
                 "curso_codigo": row["curso_codigo"],
                 "local": row["local"],
-                "horarios": horarios_por_turma.get(turma_id, {})
+                "horarios": horarios_por_turma.get(turma_id, {}),
+                "status": row["status"]
             }
             turmas_completas.append(turma_dict)
         
@@ -209,7 +212,7 @@ class TurmaRepository:
             campos_turma = []
             valores_turma = []
             
-            campos_validos_turma = ['periodo', 'vagas', 'local']
+            campos_validos_turma = ['periodo', 'vagas', 'local', 'status']
             for campo, valor in dados.items():
                 if campo in campos_validos_turma:
                     campos_turma.append(f"{campo} = ?")
@@ -338,6 +341,7 @@ class TurmaRepository:
         return self._adicionar_horarios_as_turmas(rows, turma_ids)
     
     def _adicionar_horarios_as_turmas(self, turmas_rows: List, turma_ids: List[str]) -> List[Dict[str, Any]]:
+
         """
         Adiciona horários às turmas.
         
@@ -384,3 +388,24 @@ class TurmaRepository:
             turmas_completas.append(turma_dict)
         
         return turmas_completas
+
+    def open(self, turma_id, tipo: str):
+        try:
+            sql = "SELECT status FROM turma WHERE id = ?"
+            self.cursor.execute(sql, (turma_id,))
+            row = self.cursor.fetchone()  
+            
+            if not row:  
+                raise ValueError(f"Turma {turma_id} não encontrada")
+            
+            new_status = True if tipo=="abrir" else False
+            
+            sql = "UPDATE turma SET status = ? WHERE id = ?"
+            self.cursor.execute(sql, (new_status, turma_id))
+            
+            self.conn.commit()
+            return new_status 
+            
+        except Exception as e:
+            self.conn.rollback()
+            raise ValueError(f"Erro ao atualizar status da turma: {str(e)}")

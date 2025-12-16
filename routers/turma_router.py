@@ -172,13 +172,11 @@ def abrir_turma(
 ):
     """Abre uma turma para matrículas."""
     try:
-        aberta = turma_service.abrir_turma(turma_id)
-        if not aberta:
-            raise HTTPException(status_code=404, detail="Turma não encontrada")
+        response, msg = turma_service.abrir_turma(turma_id)
         
         turma = turma_service.buscar_turma(turma_id)
         return {
-            "message": "Turma aberta para matrículas!",
+            "message": f"{msg}",
             "turma": turma.to_dict_resumo()
         }
     except HTTPException:
@@ -196,13 +194,11 @@ def fechar_turma(
 ):
     """Fecha uma turma para matrículas."""
     try:
-        fechada = turma_service.fechar_turma(turma_id)
-        if not fechada:
-            raise HTTPException(status_code=404, detail="Turma não encontrada")
+        response, msg = turma_service.fechar_turma(turma_id)
         
         turma = turma_service.buscar_turma(turma_id)
         return {
-            "message": "Turma fechada para matrículas!",
+            "message": f"{msg}",
             "turma": turma.to_dict_resumo()
         }
     except HTTPException:

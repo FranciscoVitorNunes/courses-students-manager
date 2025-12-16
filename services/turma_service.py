@@ -44,7 +44,8 @@ class TurmaService:
             horarios=turma_data.horarios,
             vagas=turma_data.vagas,
             curso=curso,
-            local=getattr(turma_data, 'local', None)
+            local=getattr(turma_data, 'local', None),
+            status=turma_data.status
         )
         
         # Salvar no banco via repository
@@ -56,45 +57,25 @@ class TurmaService:
         """
         Busca uma turma pelo ID.
         """
-        print(f"🔍 TURMA_SERVICE.buscar_turma: Iniciando busca para turma_id = '{turma_id}'")
         
         # Buscar turma no banco
         turma_dict = self.repository.get_by_id(turma_id)
         
-        print(f"🔍 TURMA_SERVICE.buscar_turma: Resultado do repository = {turma_dict}")
-        
         if not turma_dict:
-            print(f"❌ TURMA_SERVICE.buscar_turma: Turma não encontrada no repository")
             return None
-        
-        print(f"✅ TURMA_SERVICE.buscar_turma: Turma encontrada no repository")
         
         # Buscar curso
         curso_codigo = turma_dict.get('curso_codigo')
         if not curso_codigo:
-            print(f"❌ TURMA_SERVICE.buscar_turma: curso_codigo não encontrado no dicionário")
             return None
         
-        print(f"🔍 TURMA_SERVICE.buscar_turma: Buscando curso '{curso_codigo}'...")
         curso = self.curso_service.buscar_curso(curso_codigo, incluir_prerequisitos=False)
         
-        print(f"🔍 TURMA_SERVICE.buscar_turma: Resultado da busca do curso = {curso}")
-        
         if not curso:
-            print(f"❌ TURMA_SERVICE.buscar_turma: Curso não encontrado")
             return None
-        
-        print(f"✅ TURMA_SERVICE.buscar_turma: Curso encontrado")
         
         # Criar objeto Turma
         try:
-            print(f"🔍 TURMA_SERVICE.buscar_turma: Criando objeto Turma...")
-            print(f"   id: {turma_dict['id']}")
-            print(f"   periodo: {turma_dict['periodo']}")
-            print(f"   vagas: {turma_dict['vagas']}")
-            print(f"   horarios: {turma_dict['horarios']}")
-            print(f"   curso: {curso}")
-            print(f"   local: {turma_dict.get('local')}")
             
             turma = Turma(
                 id=turma_dict['id'],
@@ -102,16 +83,13 @@ class TurmaService:
                 horarios=turma_dict['horarios'],
                 vagas=turma_dict['vagas'],
                 curso=curso,
-                local=turma_dict.get('local')
+                local=turma_dict.get('local'),
+                status=turma_dict['status']
             )
             
-            print(f"✅ TURMA_SERVICE.buscar_turma: Objeto Turma criado com sucesso: {turma}")
-            print(f"✅ TURMA_SERVICE.buscar_turma: Turma.id = '{turma.id}'")
-            print(f"✅ TURMA_SERVICE.buscar_turma: Retornando turma...")
             return turma
             
         except Exception as e:
-            print(f"❌ TURMA_SERVICE.buscar_turma: ERRO ao criar objeto Turma: {e}")
             import traceback
             traceback.print_exc()
             return None
@@ -163,11 +141,9 @@ class TurmaService:
             
             # Aplicar filtro de status (após criar o objeto para calcular vagas)
             if status:
-                if status == "aberta" and not turma.esta_aberta_para_matricula():
+                if status == True and not turma.esta_aberta_para_matricula():
                     continue
-                elif status == "esgotada" and turma.status != turma.STATUS_ESGOTADA:
-                    continue
-                elif status == "fechada" and turma.status != turma.STATUS_FECHADA:
+                elif status == False and turma.status != False:
                     continue
             
             turmas.append(turma)
@@ -235,13 +211,16 @@ class TurmaService:
         turma = self.buscar_turma(turma_id)
         if not turma:
             return False
+        if turma.status == False or turma.status== None:
+            try:
+                novo_status = self.repository.open(turma_id, "abrir")
+                return True, f"Status da turma {turma_id} alterado para: {novo_status}"
+            
+            except Exception as e:
+                return False, f"Erro ao atualizar status da turma {turma_id}: {str(e)}"
+        else:
+            return False, f"A turma {turma.id} já está aberta."
         
-        turma.abrir()
-        
-        # Atualizar no banco se necessário
-        # (Neste caso, o status é calculado dinamicamente, mas podemos persistir se necessário)
-        return True
-    
     def fechar_turma(self, turma_id: str) -> bool:
         """
         Fecha uma turma para matrículas.
@@ -255,9 +234,15 @@ class TurmaService:
         turma = self.buscar_turma(turma_id)
         if not turma:
             return False
-        
-        turma.fechar()
-        return True
+        if turma.status == True or turma.status== None:
+            try:
+                novo_status = self.repository.open(turma_id, "fechar")
+                return True, f"Status da turma {turma_id} alterado para: {novo_status}"
+            
+            except Exception as e:
+                return False, f"Erro ao atualizar status da turma {turma_id}: {str(e)}"
+        else:
+            return False, f"A turma {turma.id} já está fechada."
     
     def verificar_choque_horario(self, turma_id: str, horarios: Dict[str, str]) -> bool:
         """
